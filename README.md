@@ -13,3 +13,6 @@ Para iniciar, basta executar os comandos:
 É possivel também utilizar através de emulador, iniciando o Metro com:
 
 > react-native start android
+
+
+Prints das telas, disponiveis na pasta ./prints
