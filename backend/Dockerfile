@@ -1,17 +1,11 @@
-FROM node:14
+FROM node:alpine
 
-# Create app directory
-WORKDIR /app
-
-# Install app dependencies
-COPY package*.json ./
+# Copying rest of the application to app directory
+COPY ./ ./
 
 RUN yarn
 
-# Copying rest of the application to app directory
-COPY . /app
-
 # Expose the port and start the application
-Expose 8080
+Expose 3333
 
-CMD ["npm","start"]
+CMD ["yarn","dev:server"]
