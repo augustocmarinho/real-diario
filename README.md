@@ -16,3 +16,8 @@ Para iniciar, basta executar os comandos:
 
 
 Prints das telas, disponiveis na pasta ./prints
+
+# Backend
+> cd backend
+
+> yarn dev:server

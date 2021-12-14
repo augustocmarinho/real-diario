@@ -1,7 +1,7 @@
 import Images from './Images';
-import Money from './Money'
+const baseUrl = 'http://192.168.1.7:3333/';
 
 export {
   Images,
-  Money
+  baseUrl
 };

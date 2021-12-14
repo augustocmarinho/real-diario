@@ -1,36 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState} from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import { DefaultContext } from '../context/DefaultContext';
 import {LineChart,YAxis,Grid } from 'react-native-svg-charts'
 
-import Money from '../constants/Money'
+import axios from 'axios';
+import {baseUrl} from '../constants'
 
-class MoneyInformsScreen extends React.Component {
-  render() {
-    const info = typeof Money[this.props.route.params.val] !== 'undefined' ?  Money[this.props.route.params.val] : false
+const MoneyInformsScreen = (props) => {
+   
+    const [data, setData] = useState({bid:[],ask:[],pctChange:[]});
+    const [serverStatus, setServer] = useState(true);
 
-    const bid = []
-    const ask = []
-    const pctChange = []
-    info.forEach(element => {
-      bid.push(parseFloat(element['bid']))
-      ask.push(parseFloat(element['ask']))
-      pctChange.push(parseFloat(element['pctChange']))
-    });
+    useEffect(() => {
+      const fetchData = async () =>{
+        try {
+          await axios.get(`${baseUrl}money/period/${props.route.params.val}`).then((response) => {
+            setData(response.data)
+            setServer(true)
+          })
+        } catch (error) {
+          setServer(false)
+        }
+      }
 
+      fetchData();
+    }, []);
 
     const contentInset = { top: 20, bottom: 20 }
-
     return (
       <ScrollView style={{padding:20,paddingTop:0}} >
-        
-        <Text style={styles.title} > {info[0].name} </Text>
+
+        <Text style={styles.title} > {data.name} </Text>
         <Text style={styles.subTitle} > Variação no periodo de 15 dias </Text>
 
         <Text style={styles.titleGraph} >Valor de Compra:</Text>
         <View style={{ height: 200, flexDirection: 'row' }}>
           <YAxis
-              data={bid}
+              data={data.bid}
               contentInset={contentInset}
               svg={{
                   fill: 'grey',
@@ -42,7 +47,7 @@ class MoneyInformsScreen extends React.Component {
 
           <LineChart
             style={{ flex: 1, marginLeft: 16 }}
-            data={bid}
+            data={data.bid}
             svg={{ stroke: 'rgb(134, 65, 244)' }}
           >
               <Grid />
@@ -52,7 +57,7 @@ class MoneyInformsScreen extends React.Component {
         <Text style={styles.titleGraph}>Valor de Venda:</Text>
         <View style={{ height: 200, flexDirection: 'row' }}>
           <YAxis
-              data={ask}
+              data={data.ask}
               contentInset={contentInset}
               svg={{
                   fill: 'grey',
@@ -64,7 +69,7 @@ class MoneyInformsScreen extends React.Component {
 
           <LineChart
             style={{ flex: 1, marginLeft: 16 }}
-            data={ask}
+            data={data.ask}
             svg={{ stroke: 'rgb(134, 65, 244)' }}
           >
               <Grid />
@@ -74,7 +79,7 @@ class MoneyInformsScreen extends React.Component {
         <Text style={styles.titleGraph}>Porcentagem de Variação:</Text>
         <View style={{ height: 200, flexDirection: 'row',marginBottom:50 }}>
           <YAxis
-              data={pctChange}
+              data={data.pctChange}
               contentInset={contentInset}
               svg={{
                   fill: 'grey',
@@ -86,7 +91,7 @@ class MoneyInformsScreen extends React.Component {
 
           <LineChart
             style={{ flex: 1, marginLeft: 16 }}
-            data={pctChange}
+            data={data.pctChange}
             svg={{ stroke: 'rgb(134, 65, 244)' }}
           >
               <Grid />
@@ -95,10 +100,7 @@ class MoneyInformsScreen extends React.Component {
 
       </ScrollView>
     )
-    
-  }
 }
-MoneyInformsScreen.contextType = DefaultContext;
 
 const styles = StyleSheet.create({
   title:{

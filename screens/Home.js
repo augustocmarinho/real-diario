@@ -1,23 +1,39 @@
-import React from 'react';
+import React , { useEffect, useState} from 'react';
 import { StyleSheet,Dimensions, Text, View, ScrollView, Image,ImageBackground,TextInput } from 'react-native';
 import List from '../components/List'
 
 const { width,height } = Dimensions.get('screen');
-import {Images} from '../constants'
+import {Images,baseUrl} from '../constants'
 
-import  moedas  from '../constants/json/avaliable.json'
-
+import axios from 'axios';
 
 const HomeScreen = (props) => {
 
-    const [search, onChangeText] = React.useState("");
+  const [data, setData] = useState([]);
+  const [search, onChangeText] = useState("");
+  const [serverStatus, setServer] = useState(true);
 
-    const lapsList = moedas.avaliable.filter(function(item) {
-      return (
-          Object.values(item)[0]).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-          .includes(search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-        }).map((data,i) => {
-          return ( <List key={i} name={Object.values(data)[0]} value={Object.keys(data)[0]} screen="PrayerList" navigation={props.navigation} ></List> )})
+  useEffect(() => {
+    const fetchData = async () =>{
+      try {
+        await axios.get(`${baseUrl}money`).then((response) => {
+          setData(response.data.avaliable)
+          setServer(true)
+        })
+      } catch (error) {
+        setServer(false)
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const lapsList = data.filter(function(item) {
+    return (
+        Object.values(item)[0]).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .includes(search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+      }).map((data,i) => {
+        return ( <List key={i} name={Object.values(data)[0]} value={Object.keys(data)[0]} screen="PrayerList" navigation={props.navigation} ></List> )})
 
     return (
       <View style={{marginTop:-100}}>
@@ -41,7 +57,14 @@ const HomeScreen = (props) => {
               value={search}
               placeholder="Pesquisar"
             />
-              {lapsList}
+
+              {
+                serverStatus ?
+                  lapsList
+                    :
+                  <Text>Ocorreu um erro ao se conectar ao servidor</Text>
+              }
+
             </View>
 
           </View>
