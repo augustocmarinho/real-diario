@@ -59,7 +59,7 @@ const HomeScreen = (props) => {
             />
 
               {
-                serverStatus ?
+                serverStatus && data.length ?
                   lapsList
                     :
                   <Text>Ocorreu um erro ao se conectar ao servidor</Text>

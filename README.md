@@ -36,7 +36,7 @@ Ou, através do docker:
 
 > docker build -t real-diario .
 
-> docker run -p 3333:3333 real-diario
+> docker run -d -p 3333:3333 real-diario
 
 --
 
